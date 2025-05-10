@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { userRoutes } from "../modules/users/user.routes";
-import { productRoutes } from "../modules/products/product.route";
-import { sellRoutes } from "../modules/sell/sell.routes";
-import { couponRoutes } from "../modules/coupons/coupon.route";
+import { userRoutes } from "../modules/users";
+import { productRoutes } from "../modules/products";
+import { sellRoutes } from "../modules/sell";
+import { couponRoutes } from "../modules/coupons";
 
 const router = Router();
 
