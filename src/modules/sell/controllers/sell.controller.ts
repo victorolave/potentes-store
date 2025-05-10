@@ -32,11 +32,10 @@ export const SellController = {
 
             return ProductModel.update({
               id: productSell.productId,
-              stock: productData.stock - productSell.quantity,
               sku: productData.sku,
               status: productData.status,
               name: productData.name,
-              careinstructions: productData.careinstructions,
+              careInstructions: productData.careInstructions,
               imageUrl: productData.imageUrl,
               description: productData.description,
               price: productData.price,
