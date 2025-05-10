@@ -7,7 +7,14 @@ export const ProductController = {
   createProduct: async (req: Request, res: Response): Promise<void> => {
     try {
       console.log("Creating product...", req.body);
-      const result = createProductSchema.safeParse(req.body);
+      const result = createProductSchema.safeParse({
+        ...req.body,
+        inventory: req.body.inventory.map((inventory: any) => ({
+          sizeId: inventory.size,
+          colorId: inventory.color,
+          quantity: inventory.stock,
+        })),
+      });
 
       if (!result.success) {
         res.status(400).json(ProductPresenter.formatError(result.error));

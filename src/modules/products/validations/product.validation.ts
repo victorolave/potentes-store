@@ -9,7 +9,13 @@ export const createProductSchema = z.object({
   imageUrl: z.string().url(),
   description: z.string(),
   price: z.number().positive(),
-  stock: z.number().int().positive(),
+  inventory: z.array(
+    z.object({
+      sizeId: z.string(),
+      colorId: z.string(),
+      quantity: z.number().int().positive(),
+    })
+  ),
 });
 
 export const updateProductSchema = createProductSchema.deepPartial();
