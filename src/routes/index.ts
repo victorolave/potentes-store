@@ -6,10 +6,12 @@ import { couponRoutes } from "../modules/coupons";
 import { inventoryRoutes } from "../modules/inventory";
 import { colorRoutes } from "../modules/color";
 import { sizeRoutes } from "../modules/size";
+import { authRoutes } from "../modules/auth";
 
 const router = Router();
 
 router.use("/users", userRoutes);
+router.use("/auth", authRoutes);
 router.use("/products", productRoutes);
 router.use("/sells", sellRoutes);
 router.use("/coupons", couponRoutes);
