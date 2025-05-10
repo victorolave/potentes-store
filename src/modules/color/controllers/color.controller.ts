@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ColorPresenter } from "../presenters/color.presnter";
+import { ColorPresenter } from "../presenters";
 import { createColorSchema, updateColorSchema } from "../validations";
 import { Color, ColorModel } from "../models";
 

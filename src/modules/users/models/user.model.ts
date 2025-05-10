@@ -102,17 +102,4 @@ export const UserModel = {
 
     return user;
   },
-
-  findByEmail: async (email: string) => {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-      include: {
-        customer: true,
-        employee: true,
-      },
-    });
-    return user;
-  },
 };
