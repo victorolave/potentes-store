@@ -5,6 +5,8 @@ export type ProductSell = {
   id?: string;
   productId: string;
   quantity: number;
+  colorId: string;
+  sizeId: string;
   totalPrice: number; // Total price for the product in the sell
   sellId?: string;
   createdAt?: Date;
@@ -16,9 +18,11 @@ export type Sell = {
   customerId: string;
   employeeId?: string;
   totalPrice: number; // Total price for the entire sell
-  products: ProductSell[];
+  couponCode?: string;
   createdAt?: Date;
   updatedAt?: Date;
+
+  products: ProductSell[];
 };
 
 // Database operations (Model functionality)
