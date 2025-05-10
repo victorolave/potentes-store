@@ -6,11 +6,10 @@ export type Product = {
   sku: string;
   status: string;
   name: string;
-  careinstructions: string;
+  careInstructions: string;
   imageUrl: string;
   description: string;
   price: number;
-  stock: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
