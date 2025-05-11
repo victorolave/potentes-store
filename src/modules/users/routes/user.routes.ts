@@ -7,8 +7,6 @@ import {
 
 const router = Router();
 
-router.use(authenticateJWT);
-
 router.post(
   "/",
   async (req: Request, res: Response) =>
