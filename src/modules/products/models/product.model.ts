@@ -1,4 +1,5 @@
 import { prisma } from "../../../config/prisma";
+import { Inventory } from "../../inventory";
 
 // Type definitions
 export type Product = {
@@ -10,6 +11,7 @@ export type Product = {
   imageUrl: string;
   description: string;
   price: number;
+  inventory: Inventory[];
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -22,8 +24,21 @@ export const ProductModel = {
   },
 
   create: async (data: Product) => {
+    const { inventory, ...productData } = data;
+
     const newProduct = await prisma.product.create({
-      data,
+      data: {
+        ...productData,
+        inventories: {
+          createMany: {
+            data: inventory.map((inventory) => ({
+              sizeId: inventory.sizeId,
+              colorId: inventory.colorId,
+              quantity: inventory.quantity,
+            })),
+          },
+        },
+      },
     });
     return newProduct;
   },
