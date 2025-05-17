@@ -5,8 +5,8 @@ export const createCouponSchema = z.object({
   code: z.string().min(3),
   status: z.enum(["active", "inactive"]),
   discount: z.number().positive(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.string().transform((str) => new Date(str)),
+  endDate: z.string().transform((str) => new Date(str)),
 });
 
 export const updateCouponSchema = createCouponSchema.deepPartial();

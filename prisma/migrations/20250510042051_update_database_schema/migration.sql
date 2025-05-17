@@ -8,6 +8,12 @@
   - Added the required column `size_id` to the `product_sells` table without a default value. This is not possible if the table is not empty.
 
 */
+-- Primero actualizamos los registros nulos
+UPDATE coupons SET updated_at = created_at WHERE updated_at IS NULL;
+
+-- Luego aplicamos los cambios del esquema
+ALTER TABLE coupons ALTER COLUMN updated_at SET NOT NULL;
+
 -- AlterTable
 ALTER TABLE "coupons" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;

@@ -38,7 +38,15 @@ export const ProductController = {
   updateProduct: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const result = updateProductSchema.safeParse({ ...req.body, id });
+      const result = updateProductSchema.safeParse({
+        ...req.body,
+        id,
+        inventory: req.body.inventory.map((inventory: any) => ({
+          sizeId: inventory.size,
+          colorId: inventory.color,
+          quantity: inventory.stock,
+        })),
+      });
 
       if (!result.success) {
         res.status(400).json(ProductPresenter.formatError(result.error));

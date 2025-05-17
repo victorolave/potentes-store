@@ -19,7 +19,16 @@ export type Product = {
 // Database operations (Model functionality)
 export const ProductModel = {
   findAll: async () => {
-    const products = await prisma.product.findMany();
+    const products = await prisma.product.findMany({
+      include: {
+        inventories: {
+          include: {
+            size: true,
+            color: true,
+          },
+        },
+      },
+    });
     return products;
   },
 
@@ -44,12 +53,28 @@ export const ProductModel = {
   },
 
   update: async (data: Product) => {
+    const { inventory, ...productData } = data;
+
     const updatedProduct = await prisma.product.update({
       where: {
         id: data.id,
       },
-      data,
+      data: productData,
     });
+
+    await prisma.inventory.deleteMany({
+      where: {
+        productId: data.id,
+      },
+    });
+
+    await prisma.inventory.createMany({
+      data: inventory.map((inventory) => ({
+        ...inventory,
+        productId: data.id!,
+      })),
+    });
+
     return updatedProduct;
   },
 
