@@ -92,6 +92,14 @@ export const ProductModel = {
       where: {
         id,
       },
+      include: {
+        inventories: {
+          include: {
+            size: true,
+            color: true,
+          },
+        },
+      },
     });
     return product;
   },

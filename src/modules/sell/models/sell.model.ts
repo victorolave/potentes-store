@@ -7,7 +7,7 @@ export type ProductSell = {
   quantity: number;
   colorId: string;
   sizeId: string;
-  totalPrice: number; // Total price for the product in the sell
+  totalPrice: number;
   sellId?: string;
   createdAt?: Date;
   updatedAt?: Date;
