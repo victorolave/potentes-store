@@ -11,7 +11,7 @@ export type Product = {
   imageUrl: string;
   description: string;
   price: number;
-  inventory: Inventory[];
+  inventory?: Inventory[];
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -33,7 +33,7 @@ export const ProductModel = {
   },
 
   create: async (data: Product) => {
-    const { inventory, ...productData } = data;
+    const { inventory = [], ...productData } = data;
 
     const newProduct = await prisma.product.create({
       data: {
@@ -53,7 +53,7 @@ export const ProductModel = {
   },
 
   update: async (data: Product) => {
-    const { inventory, ...productData } = data;
+    const { inventory = [], ...productData } = data;
 
     const updatedProduct = await prisma.product.update({
       where: {
@@ -62,17 +62,43 @@ export const ProductModel = {
       data: productData,
     });
 
-    await prisma.inventory.deleteMany({
-      where: {
-        productId: data.id,
-      },
-    });
+    if (inventory.length > 0) {
+      await prisma.inventory.deleteMany({
+        where: {
+          productId: data.id,
+        },
+      });
 
-    await prisma.inventory.createMany({
-      data: inventory.map((inventory) => ({
-        ...inventory,
-        productId: data.id!,
-      })),
+      await prisma.inventory.createMany({
+        data: inventory.map((inventory) => ({
+          ...inventory,
+          productId: data.id!,
+        })),
+      });
+    }
+
+    return updatedProduct;
+  },
+
+  // New method that only updates product details without touching inventory
+  updateProductOnly: async (data: Omit<Product, "inventory">) => {
+    if (!data.id) {
+      throw new Error("Product ID is required for update");
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        sku: data.sku,
+        status: data.status,
+        name: data.name,
+        careInstructions: data.careInstructions,
+        imageUrl: data.imageUrl,
+        description: data.description,
+        price: data.price,
+      },
     });
 
     return updatedProduct;

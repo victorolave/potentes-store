@@ -3,21 +3,63 @@ import { createSellSchema, updateSellSchema } from "../validations";
 import { Sell, SellModel } from "../models";
 import { SellPresenter } from "../presenters";
 import { Product, ProductModel } from "../../products/models";
+import { AuthenticatedRequest } from "../../auth/middleware/auth.middleware";
 
 export const SellController = {
   createSell: async (req: Request, res: Response): Promise<void> => {
     try {
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+
+      // Check if req.body is defined
+      if (!req.body) {
+        res
+          .status(400)
+          .json(
+            SellPresenter.formatError({ message: "Request body is missing" })
+          );
+        return;
+      }
+
+      // Check if products array is defined
+      if (!req.body.products) {
+        res
+          .status(400)
+          .json(
+            SellPresenter.formatError({ message: "Products array is missing" })
+          );
+        return;
+      }
+
       const result = createSellSchema.safeParse(req.body);
 
       if (!result.success) {
+        console.log("Validation errors:", result.error);
         res.status(400).json(SellPresenter.formatError(result.error));
         return;
       }
 
-      const sell = await SellModel.create(result.data as Sell);
+      console.log("Validated data:", JSON.stringify(result.data, null, 2));
 
-      // Update product stock
+      // Make sure products array is not undefined and not empty
+      if (!result.data.products || result.data.products.length === 0) {
+        res.status(400).json(
+          SellPresenter.formatError({
+            message: "At least one product is required",
+          })
+        );
+        return;
+      }
+
+      const sell = await SellModel.create(result.data as Sell);
+      console.log("Created sell:", JSON.stringify(sell, null, 2));
+
+      // Update product stock using the new updateProductOnly method
       if (sell?.productSells) {
+        console.log(
+          "Product sells to update:",
+          JSON.stringify(sell.productSells, null, 2)
+        );
+
         const productUpdatePromises = sell.productSells.map(
           async (productSell) => {
             const productData = await ProductModel.findById(
@@ -30,7 +72,7 @@ export const SellController = {
               );
             }
 
-            return ProductModel.update({
+            return ProductModel.updateProductOnly({
               id: productSell.productId,
               sku: productData.sku,
               status: productData.status,
@@ -39,7 +81,7 @@ export const SellController = {
               imageUrl: productData.imageUrl,
               description: productData.description,
               price: productData.price,
-            } as Product);
+            });
           }
         );
 
@@ -57,6 +99,7 @@ export const SellController = {
           )
         );
     } catch (error) {
+      console.error("Error in createSell:", error);
       res.status(500).json(SellPresenter.formatError(error));
     }
   },
@@ -144,6 +187,36 @@ export const SellController = {
           SellPresenter.formatSuccess(
             SellPresenter.formatSellList(sells),
             "Sales retrieved successfully"
+          )
+        );
+    } catch (error) {
+      res.status(500).json(SellPresenter.formatError(error));
+    }
+  },
+
+  getSellsByAuthenticatedUser: async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      if (!req.user || !req.user.id) {
+        res
+          .status(401)
+          .json(
+            SellPresenter.formatError({ message: "User not authenticated" })
+          );
+        return;
+      }
+
+      const userId = req.user.customer?.id;
+      const sells = await SellModel.findByCustomerId(userId as string);
+
+      res
+        .status(200)
+        .json(
+          SellPresenter.formatSuccess(
+            SellPresenter.formatSellList(sells),
+            "User sales retrieved successfully"
           )
         );
     } catch (error) {

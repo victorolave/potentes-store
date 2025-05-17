@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { SellController } from "../controllers";
+import { authenticateJWT } from "../../auth/middleware/auth.middleware";
 
 const router = Router();
 
@@ -25,6 +26,12 @@ router.get(
   "/",
   async (req: Request, res: Response) =>
     await SellController.getAllSells(req, res)
+);
+
+router.get(
+  "/my-sells",
+  authenticateJWT,
+  async (req, res) => await SellController.getSellsByAuthenticatedUser(req, res)
 );
 
 router.get(

@@ -9,6 +9,8 @@ export const createSellSchema = z.object({
       productId: z.string(),
       quantity: z.number().positive(),
       totalPrice: z.number().positive(),
+      colorId: z.string(),
+      sizeId: z.string(),
     })
   ),
 });

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createUserSchema, updateUserSchema } from "../validations";
 import { User, UserModel } from "../models";
 import { UserPresenter } from "../presenters";
+import * as bcrypt from "bcrypt";
 
 export const UserController = {
   createUser: async (req: Request, res: Response): Promise<void> => {
@@ -13,7 +14,14 @@ export const UserController = {
         return;
       }
 
-      const user = await UserModel.create(result.data as User);
+      const userData = result.data as User;
+      if (userData.password) {
+        const saltRounds = 10;
+        userData.password = await bcrypt.hash(userData.password, saltRounds);
+      }
+
+      const user = await UserModel.create(userData);
+
       res
         .status(201)
         .json(
