@@ -80,7 +80,19 @@ export const UserModel = {
   },
 
   delete: async (id: string) => {
-    const deletedUser = prisma.user.delete({
+    await prisma.customer.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    await prisma.employee.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    const deletedUser = await prisma.user.delete({
       where: {
         id,
       },

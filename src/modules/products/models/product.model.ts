@@ -79,6 +79,12 @@ export const ProductModel = {
   },
 
   delete: async (id: string) => {
+    await prisma.inventory.deleteMany({
+      where: {
+        productId: id,
+      },
+    });
+
     const deletedProduct = await prisma.product.delete({
       where: {
         id,
